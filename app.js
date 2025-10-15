@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sectionFilter = document.getElementById('section-filter');
     const questionJump = document.getElementById('question-jump');
     const jumpBtn = document.getElementById('jump-btn');
+    const questionImage = document.getElementById('question-image');
     const questionText = document.getElementById('question-text');
     const optionsContainer = document.getElementById('options-container');
     const feedback = document.getElementById('feedback');
@@ -36,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const startTestBtn = document.getElementById('start-test-btn');
     const testQuestionCounter = document.getElementById('test-question-counter');
     const timerDisplay = document.getElementById('timer');
+    const testQuestionImage = document.getElementById('test-question-image');
     const testQuestionText = document.getElementById('test-question-text');
     const testOptionsContainer = document.getElementById('test-options-container');
     const testPrevBtn = document.getElementById('test-prev-btn');
@@ -110,6 +112,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const question = filteredQuestions[currentQuestionIndex];
+        const onPageImage = document.getElementById('question-image');
+
+        // 1. Immediately hide the image container. This prevents the old question's image from lingering.
+        onPageImage.style.display = 'none';
+        
+        const imageUrl = `images/${question.index}.png`;
+
+        // 2. Create a temporary, in-memory image object to perform the check.
+        const imageChecker = new Image();
+
+        // 3. Define what happens on success (the image exists and loaded).
+        imageChecker.onload = () => {
+            onPageImage.src = imageUrl;
+            onPageImage.style.display = 'block';
+        };
+
+        // 4. Define what happens on failure (image does not exist).
+        imageChecker.onerror = () => {
+            // The real image is already hidden, so we don't need to do anything.
+            onPageImage.src = '';
+        };
+
+        // 5. This kicks off the check. The browser will try to load the image into our temporary object.
+        imageChecker.src = imageUrl;
+
+
         questionText.textContent = `(${question.index}) ${question.question}`;
         optionsContainer.innerHTML = '';
         feedback.classList.add('hidden');
@@ -215,6 +243,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const displayTestQuestion = () => {
         const question = mockTestQuestions[currentTestQuestionIndex];
+        const onPageTestImage = document.getElementById('test-question-image');
+
+        onPageTestImage.style.display = 'none';
+        const imageUrl = `images/${question.index}.png`;
+        const imageChecker = new Image();
+
+        imageChecker.onload = () => {
+            onPageTestImage.src = imageUrl;
+            onPageTestImage.style.display = 'block';
+        };
+
+        imageChecker.onerror = () => {
+            onPageTestImage.src = '';
+        };
+        
+        imageChecker.src = imageUrl;
+
         testQuestionText.textContent = question.question;
         testOptionsContainer.innerHTML = '';
 

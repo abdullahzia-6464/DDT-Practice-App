@@ -66,6 +66,16 @@ button:disabled {
     cursor: not-allowed;
 }
 
+.question-image {
+    max-width: 100%;
+    height: auto;
+    max-height: 250px;
+    display: block;
+    margin: 0 auto 15px auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
 .option {
     display: block;
     width: 100%;
@@ -78,6 +88,7 @@ button:disabled {
     border-radius: 4px;
     cursor: pointer;
 }
+
 
 .option.correct {
     background-color: #d4edda;
