@@ -267,15 +267,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const button = document.createElement('button');
             button.className = 'option';
             button.textContent = option;
-            if(userTestAnswers[currentTestQuestionIndex] === index) {
-                button.classList.add('selected'); // A visual cue for selected answer
-            }
-            button.addEventListener('click', () => {
-                userTestAnswers[currentTestQuestionIndex] = index;
-                // Simple visual feedback for selection
-                document.querySelectorAll('#test-options-container .option').forEach(btn => btn.classList.remove('selected'));
-                button.classList.add('selected');
-            });
+            if (userTestAnswers[currentTestQuestionIndex] === index) {
+            button.classList.add('selected');
+        }
+
+        // 2. Add the click event listener to handle selection
+        button.addEventListener('click', () => {
+        // Save the user's answer
+        userTestAnswers[currentTestQuestionIndex] = index;
+
+        // Remove 'selected' from all sibling buttons
+        document.querySelectorAll('#test-options-container .option').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+
+        // Add 'selected' to the clicked button
+        button.classList.add('selected');
+        });
+
             testOptionsContainer.appendChild(button);
         });
         

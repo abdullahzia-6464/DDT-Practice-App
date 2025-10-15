@@ -105,6 +105,11 @@ button:disabled {
     cursor: not-allowed;
 }
 
+.option.selected {
+    background-color: #cce5ff; /* A light blue background */
+    border-color: #007bff;     /* A darker blue border */
+}
+
 #feedback {
     margin-top: 15px;
     padding: 10px;
