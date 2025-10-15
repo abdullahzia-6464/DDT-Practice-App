@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDT Practice and Mock Test</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>DDT Questions</h1>
+            <nav>
+                <button id="practice-mode-btn" class="active">Practice Mode</button>
+                <button id="mock-test-mode-btn">Mock Test Mode</button>
+            </nav>
+        </header>
+
+        <main id="practice-mode" class="mode-content">
+            <div class="controls">
+                <select id="section-filter">
+                    <option value="all">All Sections</option>
+                </select>
+                <input type="number" id="question-jump" placeholder="Go to question #">
+                <button id="jump-btn">Go</button>
+            </div>
+            <div id="question-container">
+                <h2 id="question-text"></h2>
+                <div id="options-container"></div>
+                <div id="feedback" class="hidden">
+                    <p id="explanation"></p>
+                </div>
+            </div>
+            <div class="navigation">
+                <button id="prev-btn">Previous</button>
+                <span id="question-counter"></span>
+                <button id="next-btn">Next</button>
+            </div>
+        </main>
+
+        <main id="mock-test-mode" class="mode-content hidden">
+            <div id="test-start-screen">
+                <h2>Mock Test</h2>
+                <p>You will be given 40 random questions and have 30 minutes to complete the test.</p>
+                <p>The passing score is 35 out of 40.</p>
+                <button id="start-test-btn">Start Test</button>
+            </div>
+            <div id="test-container" class="hidden">
+                <div class="test-header">
+                    <span id="test-question-counter"></span>
+                    <span id="timer">30:00</span>
+                </div>
+                <h2 id="test-question-text"></h2>
+                <div id="test-options-container"></div>
+                <div class="test-navigation">
+                    <button id="test-prev-btn">Previous</button>
+                    <button id="test-next-btn">Next</button>
+                </div>
+                <button id="submit-test-btn">Submit Test</button>
+            </div>
+            <div id="test-results-screen" class="hidden">
+                <h2>Test Results</h2>
+                <p>Your score is: <span id="score"></span></p>
+                <p id="result-message"></p>
+                <button id="restart-test-btn">Try Again</button>
+            </div>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
