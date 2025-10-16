@@ -67,6 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const scoreDisplay = document.getElementById('score');
     const resultMessage = document.getElementById('result-message');
     const restartTestBtn = document.getElementById('restart-test-btn');
+    
+    // Theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
 
     // --- Utility Functions ---
 
@@ -79,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
             loadSolvedQuestions();
             loadStarredQuestions();
             loadBookmark();
+            loadTheme();
             populateSections();
             displayQuestion();
             updateBookmarkButton();
@@ -125,6 +129,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const saveBookmark = () => {
         localStorage.setItem('ddtBookmark', JSON.stringify(bookmark));
+    };
+
+    // Theme management
+    const loadTheme = () => {
+        const savedTheme = localStorage.getItem('ddtTheme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeToggle(savedTheme);
+    };
+
+    const toggleTheme = () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('ddtTheme', newTheme);
+        updateThemeToggle(newTheme);
+    };
+
+    const updateThemeToggle = (theme) => {
+        themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+        themeToggle.title = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
     };
 
     const toggleStar = (questionIndex) => {
@@ -636,6 +660,9 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleStar(question.index);
         updateStarButton(testStarBtn, question.index);
     });
+
+    // Theme toggle functionality
+    themeToggle.addEventListener('click', toggleTheme);
 
     // --- Initial Load ---
     fetchData();
