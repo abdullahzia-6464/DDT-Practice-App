@@ -47,6 +47,66 @@ nav button.active {
     align-items: center;
 }
 
+.bookmark-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.question-header h2 {
+    margin: 0;
+    flex: 1;
+}
+
+.star-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.star-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.star-btn.starred {
+    color: #ffd700;
+}
+
+.star-btn.unstarred {
+    color: #ccc;
+}
+
+.bookmark-btn {
+    background-color: #6c757d !important;
+    color: white !important;
+    transition: background-color 0.2s;
+}
+
+.bookmark-btn:hover {
+    background-color: #5a6268 !important;
+}
+
+.bookmark-btn.bookmarked {
+    background-color: #28a745 !important;
+}
+
+.bookmark-btn.bookmarked:hover {
+    background-color: #218838 !important;
+}
+
 #section-filter, #question-jump {
     padding: 8px;
     border: 1px solid #ccc;

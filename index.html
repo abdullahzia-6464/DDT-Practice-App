@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DDT Practice and Mock Test</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="app-container">
         <header>
             <h1>DDT Questions</h1>
             <nav>
                 <button id="practice-mode-btn" class="active">Practice Mode</button>
+                <button id="starred-mode-btn">Starred Questions</button>
                 <button id="mock-test-mode-btn">Mock Test Mode</button>
             </nav>
         </header>
@@ -27,11 +30,18 @@
                     <input type="number" id="question-jump" placeholder="Go to question #">
                     <button id="jump-btn">Go</button>
                 </div>
+                <div class="bookmark-controls">
+                    <button id="bookmark-btn" class="bookmark-btn">🔖 Bookmark This Question</button>
+                    <button id="continue-bookmark-btn">Continue from Bookmark</button>
+                </div>
             </div>
             <div id="question-container">
                 <!-- ADDED IMAGE ELEMENT -->
                 <img id="question-image" src="" alt="Question image" class="question-image" style="display: none;">
-                <h2 id="question-text"></h2>
+                <div class="question-header">
+                    <h2 id="question-text"></h2>
+                    <button id="star-btn" class="star-btn" title="Star this question">☆</button>
+                </div>
                 <div id="options-container"></div>
                 <div id="feedback" class="hidden">
                     <p id="explanation"></p>
@@ -41,6 +51,26 @@
                 <button id="prev-btn">Previous</button>
                 <span id="question-counter"></span>
                 <button id="next-btn">Next</button>
+            </div>
+        </main>
+
+        <main id="starred-mode" class="mode-content hidden">
+            <div id="starred-question-container">
+                <img id="starred-question-image" src="" alt="Question image" class="question-image"
+                    style="display: none;">
+                <div class="question-header">
+                    <h2 id="starred-question-text"></h2>
+                    <button id="starred-star-btn" class="star-btn" title="Unstar this question">★</button>
+                </div>
+                <div id="starred-options-container"></div>
+                <div id="starred-feedback" class="hidden">
+                    <p id="starred-explanation"></p>
+                </div>
+            </div>
+            <div class="navigation">
+                <button id="starred-prev-btn">Previous</button>
+                <span id="starred-question-counter"></span>
+                <button id="starred-next-btn">Next</button>
             </div>
         </main>
 
@@ -58,7 +88,10 @@
                 </div>
                 <!-- ADDED IMAGE ELEMENT -->
                 <img id="test-question-image" src="" alt="Question image" class="question-image" style="display: none;">
-                <h2 id="test-question-text"></h2>
+                <div class="question-header">
+                    <h2 id="test-question-text"></h2>
+                    <button id="test-star-btn" class="star-btn" title="Star this question">☆</button>
+                </div>
                 <div id="test-options-container"></div>
                 <div class="test-navigation">
                     <button id="test-prev-btn">Previous</button>
@@ -76,4 +109,5 @@
     </div>
     <script src="app.js"></script>
 </body>
+
 </html>

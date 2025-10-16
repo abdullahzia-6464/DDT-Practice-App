@@ -4,6 +4,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let filteredQuestions = [];
     let currentQuestionIndex = 0;
     let solvedQuestions = new Set();
+    let starredQuestions = new Set();
+    let starredQuestionsList = [];
+    let currentStarredIndex = 0;
+    let bookmark = null;
 
     // Mock test variables
     let mockTestQuestions = [];
@@ -13,22 +17,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // DOM Elements
     const practiceModeBtn = document.getElementById('practice-mode-btn');
+    const starredModeBtn = document.getElementById('starred-mode-btn');
     const mockTestModeBtn = document.getElementById('mock-test-mode-btn');
     const practiceMode = document.getElementById('practice-mode');
+    const starredMode = document.getElementById('starred-mode');
     const mockTestMode = document.getElementById('mock-test-mode');
 
     // Practice Mode Elements
     const sectionFilter = document.getElementById('section-filter');
     const questionJump = document.getElementById('question-jump');
     const jumpBtn = document.getElementById('jump-btn');
+    const bookmarkBtn = document.getElementById('bookmark-btn');
+    const continueBookmarkBtn = document.getElementById('continue-bookmark-btn');
     const questionImage = document.getElementById('question-image');
     const questionText = document.getElementById('question-text');
+    const starBtn = document.getElementById('star-btn');
     const optionsContainer = document.getElementById('options-container');
     const feedback = document.getElementById('feedback');
     const explanation = document.getElementById('explanation');
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     const questionCounter = document.getElementById('question-counter');
+
+    // Starred Mode Elements
+    const starredQuestionImage = document.getElementById('starred-question-image');
+    const starredQuestionText = document.getElementById('starred-question-text');
+    const starredStarBtn = document.getElementById('starred-star-btn');
+    const starredOptionsContainer = document.getElementById('starred-options-container');
+    const starredFeedback = document.getElementById('starred-feedback');
+    const starredExplanation = document.getElementById('starred-explanation');
+    const starredPrevBtn = document.getElementById('starred-prev-btn');
+    const starredNextBtn = document.getElementById('starred-next-btn');
+    const starredQuestionCounter = document.getElementById('starred-question-counter');
 
     // Mock Test Elements
     const startScreen = document.getElementById('test-start-screen');
@@ -39,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const timerDisplay = document.getElementById('timer');
     const testQuestionImage = document.getElementById('test-question-image');
     const testQuestionText = document.getElementById('test-question-text');
+    const testStarBtn = document.getElementById('test-star-btn');
     const testOptionsContainer = document.getElementById('test-options-container');
     const testPrevBtn = document.getElementById('test-prev-btn');
     const testNextBtn = document.getElementById('test-next-btn');
@@ -56,8 +77,11 @@ document.addEventListener('DOMContentLoaded', () => {
             allQuestions = data['ddt-questions'].state.allQuestions;
             filteredQuestions = allQuestions;
             loadSolvedQuestions();
+            loadStarredQuestions();
+            loadBookmark();
             populateSections();
             displayQuestion();
+            updateBookmarkButton();
         } catch (error) {
             console.error('Error fetching questions:', error);
             questionText.textContent = 'Failed to load questions.';
@@ -75,19 +99,104 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('solvedDDTQuestions', JSON.stringify(Array.from(solvedQuestions)));
     };
 
+    const loadStarredQuestions = () => {
+        const starred = localStorage.getItem('starredDDTQuestions');
+        if (starred) {
+            starredQuestions = new Set(JSON.parse(starred));
+            updateStarredQuestionsList();
+        }
+    };
+
+    const saveStarredQuestions = () => {
+        localStorage.setItem('starredDDTQuestions', JSON.stringify(Array.from(starredQuestions)));
+        updateStarredQuestionsList();
+    };
+
+    const updateStarredQuestionsList = () => {
+        starredQuestionsList = allQuestions.filter(q => starredQuestions.has(q.index));
+    };
+
+    const loadBookmark = () => {
+        const savedBookmark = localStorage.getItem('ddtBookmark');
+        if (savedBookmark) {
+            bookmark = JSON.parse(savedBookmark);
+        }
+    };
+
+    const saveBookmark = () => {
+        localStorage.setItem('ddtBookmark', JSON.stringify(bookmark));
+    };
+
+    const toggleStar = (questionIndex) => {
+        if (starredQuestions.has(questionIndex)) {
+            starredQuestions.delete(questionIndex);
+        } else {
+            starredQuestions.add(questionIndex);
+        }
+        saveStarredQuestions();
+    };
+
+    const updateStarButton = (button, questionIndex) => {
+        if (starredQuestions.has(questionIndex)) {
+            button.classList.add('starred');
+            button.classList.remove('unstarred');
+            button.textContent = '★'; // Filled star
+            button.title = 'Unstar this question';
+        } else {
+            button.classList.add('unstarred');
+            button.classList.remove('starred');
+            button.textContent = '☆'; // Hollow star
+            button.title = 'Star this question';
+        }
+    };
+
+    const updateBookmarkButton = () => {
+        if (bookmark) {
+            continueBookmarkBtn.textContent = `Continue from Q${bookmark.questionIndex}`;
+            continueBookmarkBtn.disabled = false;
+        } else {
+            continueBookmarkBtn.textContent = 'No bookmark saved';
+            continueBookmarkBtn.disabled = true;
+        }
+        
+        // Update bookmark button appearance
+        const currentQuestion = filteredQuestions[currentQuestionIndex];
+        if (currentQuestion && bookmark && bookmark.questionIndex === currentQuestion.index) {
+            bookmarkBtn.classList.add('bookmarked');
+            bookmarkBtn.textContent = '🔖 Bookmarked';
+        } else {
+            bookmarkBtn.classList.remove('bookmarked');
+            bookmarkBtn.textContent = '🔗 Bookmark This Question';
+        }
+    };
+
     // --- Mode Switching ---
 
     practiceModeBtn.addEventListener('click', () => {
         practiceMode.classList.remove('hidden');
+        starredMode.classList.add('hidden');
         mockTestMode.classList.add('hidden');
         practiceModeBtn.classList.add('active');
+        starredModeBtn.classList.remove('active');
         mockTestModeBtn.classList.remove('active');
+    });
+
+    starredModeBtn.addEventListener('click', () => {
+        practiceMode.classList.add('hidden');
+        starredMode.classList.remove('hidden');
+        mockTestMode.classList.add('hidden');
+        practiceModeBtn.classList.remove('active');
+        starredModeBtn.classList.add('active');
+        mockTestModeBtn.classList.remove('active');
+        displayStarredQuestion();
     });
 
     mockTestModeBtn.addEventListener('click', () => {
         practiceMode.classList.add('hidden');
+        starredMode.classList.add('hidden');
         mockTestMode.classList.remove('hidden');
         practiceModeBtn.classList.remove('active');
+        starredModeBtn.classList.remove('active');
         mockTestModeBtn.classList.add('active');
         resetMockTestView();
     });
@@ -139,6 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         questionText.textContent = `(${question.index}) ${question.question}`;
+        updateStarButton(starBtn, question.index);
         optionsContainer.innerHTML = '';
         feedback.classList.add('hidden');
 
@@ -156,6 +266,91 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         updatePracticeNav();
+        updateBookmarkButton(); // Update bookmark button when question changes
+    };
+
+    const displayStarredQuestion = () => {
+        if (starredQuestionsList.length === 0) {
+            starredQuestionText.textContent = 'No starred questions yet.';
+            starredOptionsContainer.innerHTML = '';
+            starredQuestionImage.style.display = 'none';
+            starredStarBtn.style.display = 'none';
+            updateStarredNav();
+            return;
+        }
+
+        const question = starredQuestionsList[currentStarredIndex];
+        const onPageImage = starredQuestionImage;
+
+        onPageImage.style.display = 'none';
+        const imageUrl = `images/${question.index}.png`;
+        const imageChecker = new Image();
+
+        imageChecker.onload = () => {
+            onPageImage.src = imageUrl;
+            onPageImage.style.display = 'block';
+        };
+
+        imageChecker.onerror = () => {
+            onPageImage.src = '';
+        };
+
+        imageChecker.src = imageUrl;
+
+        starredQuestionText.textContent = `(${question.index}) ${question.question}`;
+        starredStarBtn.style.display = 'block';
+        updateStarButton(starredStarBtn, question.index);
+        starredOptionsContainer.innerHTML = '';
+        starredFeedback.classList.add('hidden');
+
+        question.options.forEach((option, index) => {
+            const button = document.createElement('button');
+            button.className = 'option';
+            button.textContent = option;
+            if (solvedQuestions.has(question.index)) {
+                if (index === question.correct_answer) {
+                    button.classList.add('correct');
+                }
+            }
+            button.addEventListener('click', () => handleStarredAnswer(index, question));
+            starredOptionsContainer.appendChild(button);
+        });
+
+        updateStarredNav();
+    };
+
+    const handleStarredAnswer = (selectedIndex, question) => {
+        const isCorrect = selectedIndex === question.correct_answer;
+        const optionButtons = starredOptionsContainer.querySelectorAll('.option');
+
+        if (isCorrect) {
+            solvedQuestions.add(question.index);
+            saveSolvedQuestions();
+        }
+
+        optionButtons.forEach((button, index) => {
+            if (index === question.correct_answer) {
+                button.classList.add('correct');
+            } else if (index === selectedIndex) {
+                button.classList.add('incorrect');
+            }
+            button.disabled = true;
+        });
+
+        starredExplanation.textContent = `Explanation: ${question.explanation}`;
+        starredFeedback.classList.remove('hidden');
+    };
+
+    const updateStarredNav = () => {
+        if (starredQuestionsList.length === 0) {
+            starredQuestionCounter.textContent = 'No starred questions';
+            starredPrevBtn.disabled = true;
+            starredNextBtn.disabled = true;
+        } else {
+            starredQuestionCounter.textContent = `${currentStarredIndex + 1} / ${starredQuestionsList.length}`;
+            starredPrevBtn.disabled = currentStarredIndex === 0;
+            starredNextBtn.disabled = currentStarredIndex === starredQuestionsList.length - 1;
+        }
     };
 
     const handleAnswer = (selectedIndex, question) => {
@@ -224,6 +419,82 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Star functionality
+    starBtn.addEventListener('click', () => {
+        const question = filteredQuestions[currentQuestionIndex];
+        toggleStar(question.index);
+        updateStarButton(starBtn, question.index);
+    });
+
+    starredStarBtn.addEventListener('click', () => {
+        const question = starredQuestionsList[currentStarredIndex];
+        toggleStar(question.index);
+        updateStarButton(starredStarBtn, question.index);
+        // If unstarred, remove from starred list and update display
+        if (!starredQuestions.has(question.index)) {
+            if (currentStarredIndex >= starredQuestionsList.length - 1) {
+                currentStarredIndex = Math.max(0, starredQuestionsList.length - 2);
+            }
+            displayStarredQuestion();
+        }
+    });
+
+    // Starred navigation
+    starredPrevBtn.addEventListener('click', () => {
+        if (currentStarredIndex > 0) {
+            currentStarredIndex--;
+            displayStarredQuestion();
+        }
+    });
+
+    starredNextBtn.addEventListener('click', () => {
+        if (currentStarredIndex < starredQuestionsList.length - 1) {
+            currentStarredIndex++;
+            displayStarredQuestion();
+        }
+    });
+
+    // Bookmark functionality
+    bookmarkBtn.addEventListener('click', () => {
+        const question = filteredQuestions[currentQuestionIndex];
+        bookmark = {
+            questionIndex: question.index,
+            section: sectionFilter.value,
+            filteredIndex: currentQuestionIndex
+        };
+        saveBookmark();
+        updateBookmarkButton();
+        // Show a brief confirmation without alert
+        const originalText = bookmarkBtn.textContent;
+        bookmarkBtn.textContent = '✓ Bookmarked!';
+        setTimeout(() => {
+            updateBookmarkButton();
+        }, 1500);
+    });
+
+    continueBookmarkBtn.addEventListener('click', () => {
+        if (bookmark) {
+            sectionFilter.value = bookmark.section;
+            if (bookmark.section === 'all') {
+                filteredQuestions = allQuestions;
+            } else {
+                filteredQuestions = allQuestions.filter(q => q.section === bookmark.section);
+            }
+            
+            const questionToFind = allQuestions.find(q => q.index === bookmark.questionIndex);
+            if (questionToFind) {
+                currentQuestionIndex = filteredQuestions.indexOf(questionToFind);
+                if (currentQuestionIndex === -1) {
+                    // Question not in current filter, switch to all
+                    sectionFilter.value = 'all';
+                    filteredQuestions = allQuestions;
+                    currentQuestionIndex = allQuestions.indexOf(questionToFind);
+                }
+                displayQuestion();
+            }
+        }
+    });
+
 
     // --- Mock Test Logic ---
     
@@ -261,6 +532,7 @@ document.addEventListener('DOMContentLoaded', () => {
         imageChecker.src = imageUrl;
 
         testQuestionText.textContent = question.question;
+        updateStarButton(testStarBtn, question.index);
         testOptionsContainer.innerHTML = '';
 
         question.options.forEach((option, index) => {
@@ -356,6 +628,13 @@ document.addEventListener('DOMContentLoaded', () => {
             currentTestQuestionIndex++;
             displayTestQuestion();
         }
+    });
+
+    // Test star functionality
+    testStarBtn.addEventListener('click', () => {
+        const question = mockTestQuestions[currentTestQuestionIndex];
+        toggleStar(question.index);
+        updateStarButton(testStarBtn, question.index);
     });
 
     // --- Initial Load ---
