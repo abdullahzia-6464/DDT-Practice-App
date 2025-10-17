@@ -196,6 +196,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Mode Switching ---
 
+    const showNavigation = (navElement) => {
+        // Hide all navigations first
+        document.querySelectorAll('.navigation, .test-navigation').forEach(nav => {
+            nav.classList.add('hidden');
+        });
+        // Show the specified navigation
+        if (navElement) {
+            navElement.classList.remove('hidden');
+        }
+    };
+
     practiceModeBtn.addEventListener('click', () => {
         practiceMode.classList.remove('hidden');
         starredMode.classList.add('hidden');
@@ -203,6 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
         practiceModeBtn.classList.add('active');
         starredModeBtn.classList.remove('active');
         mockTestModeBtn.classList.remove('active');
+        showNavigation(practiceMode.querySelector('.navigation'));
     });
 
     starredModeBtn.addEventListener('click', () => {
@@ -213,6 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
         starredModeBtn.classList.add('active');
         mockTestModeBtn.classList.remove('active');
         displayStarredQuestion();
+        showNavigation(starredMode.querySelector('.navigation'));
     });
 
     mockTestModeBtn.addEventListener('click', () => {
@@ -223,6 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
         starredModeBtn.classList.remove('active');
         mockTestModeBtn.classList.add('active');
         resetMockTestView();
+        showNavigation(null); // Hide navigation for mock test start screen
     });
 
     // --- Practice Mode Logic ---
@@ -534,6 +548,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         displayTestQuestion();
         startTimer(30 * 60);
+        showNavigation(testContainer.querySelector('.test-navigation'));
     };
 
     const displayTestQuestion = () => {
@@ -626,6 +641,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         testContainer.classList.add('hidden');
         resultsScreen.classList.remove('hidden');
+        showNavigation(null); // Hide navigation for results screen
     };
     
     const resetMockTestView = () => {
@@ -634,6 +650,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsScreen.classList.add('hidden');
         startScreen.classList.remove('hidden');
         timerDisplay.textContent = "30:00";
+        showNavigation(null); // Hide navigation for start screen
     }
 
     startTestBtn.addEventListener('click', startTest);
